@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Decommissioned devices</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/decom.css">
+  </head>
+
+  <body>
+    <div class="testbox">
+      <form action="/nbremove" method="post">
+        <h1>Removed devices</h1>
+        <p>Devices detected by IP Fabric to be decommissioned in NetBox</p>
+        <div>
+            <div class="question-answer">
+
+            {% include 'decom-list.html' %}
+
+            <script>
+            function toggleAll() {
+              var x = document.getElementById("toggle").checked;
+              checkboxes = document.getElementsByTagName("INPUT");
+              for(var i=1, n=checkboxes.length;i<n;i++) {
+                checkboxes[i].checked = x;
+              }
+            }
+            </script>
+
+            <script>
+            function toggleOne() {
+              document.getElementById("toggle").checked = false;
+            }
+            </script>
+          </div>
+        </div>
+        <div class="btn-block">
+          <button type="submit" href="/">Decommission</button>
+        </div>
+
+
+      </form>
+    </div>
+  </body>
+</html>
