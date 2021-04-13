@@ -16,16 +16,12 @@ app=Flask(__name__)
 #Global variables
 pipeline = queue.Queue(maxsize=10)
 
-ipfApiToken='c920033ffd96e7dbd631478870e3a9d8'
-ipfServer='demo6.ipf.ipfabric.io'
+
 ipfBaseUrl='/api/v1/'
 ipfHeaders={'X-API-Token':ipfApiToken,'Content-Type':'application/json'}
-nbApiToken='af76ac335611fed9a0c0efcb8d3d2034cd05629b'
-nbServer='10.0.9.73'
+
 nbHeaders={'Authorization':'Token '+nbApiToken, 'Content-Type':'application/json'}
-sNowServer='dev85455.service-now.com'
-sNowUser='admin'
-sNowPass='Ipfabricdem0!'
+
 sNowHeaders={'Connection':'keep-alive','Content-Type':'application/json','Accept':'application/json'}
 webhookServer='10.0.9.2' #'127.0.0.1'
 firstTime=True
