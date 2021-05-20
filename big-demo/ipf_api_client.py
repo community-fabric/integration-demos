@@ -1,24 +1,30 @@
 from typing import List, Dict, Optional
 import os
 
-from httpx import Client
+from httpx import Client as httpxClient
 
-class IPFClient (Client):
+class IPFClient (httpxClient):
     def __init__ (self, *vargs, token : Optional[str] = None, snapshot_id = '$last', **kwargs):
         '''
         Initialise an IPFClient object.
         
         Sets properties:
-        * base_url = IP Fabric instance provided in 'base_url' parameter, or the 'IPF_ADDR' environment variable
+        * base_url = IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
         * headers = Required headers for the IP Fabric API calls - embeds the API token from the 'token' parameter or 'IPF_TOKEN' environment variable
         * snapshot_id = IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         '''
         try:
-            assert kwargs.setdefault('base_url',os.environ['IPF_ADDR'])
-        except (AssertionError, KeyError):
+            env_url = os.environ['IPF_URL']
+        except KeyError:
+            env_url = ''
+
+        try:
+            assert kwargs.setdefault('base_url',env_url)
+        except AssertionError:
             raise RuntimeError(
-                f'base_url not provided or IPF_ADDR not set'
+                f'base_url not provided or IPF_URL not set'
             )
+            
         kwargs['base_url']+='/api/v1'
 
         if not token:
@@ -89,4 +95,14 @@ class IPFClient (Client):
         body=res.json()
         return body['data'] 
         
+class IPFDevice():
+    def __init__ (self, name: str):
+        ipf=IPFClient()
+        device=ipf.fetch_table('tables/inventory/devices',columns=['hostname','siteName','vendor','platform','loginIp'],filters={'hostname':['like',name]})
+        self.hostname = device[0]['hostname']
+        self.site = device[0]['siteName']
+        self.vendor = device[0]['vendor']
+        self.ipaddr = device[0]['loginIp']
+        self.snmpv2 = 'public'
+
 

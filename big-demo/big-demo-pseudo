@@ -1,0 +1,22 @@
+'''
+Flask app - user input through forms built in HTML, URLs mapped to functions.
+
+Components are:
+
+- Queue to receive notification in the form of webhooks
+- Servicer to take events from top of queue and handle them appropriately - each trigger will have a specific workflow
+- API client to interface with external systems
+- Querier to use API client(s) to fetch data from one or more sources, filter and correlate
+- Worker to manipulate the data if necessary and use API client(s) to push data into one or more destinations and trigger events in other systems
+- Reporter to communicate results of actions using API client(s) to external systems
+
+Forms:
+
+- Configuration of Components
+    - Servicer - event definition (eg webhook content and source) + workflow function
+    - Querier - external system(s) + data identifiers (eg filter, columns) + qualifier (eg full, partial, comparison, most recent, specific date)
+    - Worker - output system(s)
+    - Reporter - comms platform(s) + template msg
+
+
+'''
