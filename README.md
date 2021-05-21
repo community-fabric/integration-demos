@@ -1,9 +1,9 @@
 # integration-demos
 This repo is used for the Python examples used to demonstrate IP Fabric's integrations with other systems.
 
-* [ipf-api-client](ipf-api-client)
+* [api_clients](api_clients)
 
-This directory contains a Python API client for IP Fabric based on httpx
+This directory contains API clients for IP Fabric and other systems based on httpx, along with some demo usage scripts
 
 * [netbox-demo](netbox-demo) 
 
