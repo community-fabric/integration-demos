@@ -13,14 +13,13 @@ class NistCVEClient (Client):
         '''
 
         try:
-            assert kwargs.setdefault('base_url','http://services.nvd.nist.gov/rest/json/cves/1.0?cpeMatchString=cpe:2.3:*:')
+            assert kwargs.setdefault('base_url','http://services.nvd.nist.gov/rest/json/cves/1.0')
         except (AssertionError, KeyError):
             raise RuntimeError(
                 f'base_url not provided'
             )
-        
+        kwargs['base_url']+='?cpeMatchString=cpe:2.3:*:'
         super().__init__(*vargs, verify=False, **kwargs)
-
 
 
 class NistCVECheck():
