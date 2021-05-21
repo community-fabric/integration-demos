@@ -3,7 +3,7 @@ This module contains an API Client for IP Fabric. It defines a class of object, 
 
 Example use: ipf = IPFClient(base_url='https://demoXX.ipfabric.io', token='XXXXXXXXXXXXX')
 
-* base_url = IP Fabric instance provided in 'base_url' parameter, or the 'IPF_ADDR' environment variable
+* base_url = IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
 * headers = Required headers for the IP Fabric API calls - embeds the API token from the 'token' parameter or 'IPF_TOKEN' environment variable
 * snapshot_id = IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
 
