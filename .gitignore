@@ -137,3 +137,7 @@ dmypy.json
 
 #git
 .gitignore
+
+#cisco poc
+cisco*
+cisco_poc/
