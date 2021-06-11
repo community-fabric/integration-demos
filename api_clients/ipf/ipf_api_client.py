@@ -68,6 +68,50 @@ class IPFClient (httpxClient):
 
         return snap_list
         
+    def site_list(self, filters: Optional[Dict] = None, pagination: Optional[Dict] = None, snapshot_id: Optional[str] = None):
+        '''
+        Method to fetch the list of sites from the IPF instance opened in the API client, or the one entered
+
+        Takes parameters to select:
+        * filters - [optional] dictionary describing the table filters to be applied to the records (taken from IP Fabric table description)
+        * pagination - [optional] start and length of the "page" of data required
+        * snapshot_id - [optional] IP Fabric snapshot identifier to override the default defined at object initialisation
+
+        Returns a list of dictionaries in the form:
+        [
+            {
+                'siteName': descriptive site name,
+                'id': site id,
+                'siteKey': site Key,
+                'devicesCount': number of devices in this site,
+            }
+        ]
+        '''
+        sites=self.fetch_table('tables/inventory/sites',columns=['siteName','id','siteKey','devicesCount'],filters=filters, pagination=pagination, snapshot_id=snapshot_id)
+        return sites
+
+    def device_list(self, filters: Optional[Dict] = None, pagination: Optional[Dict] = None, snapshot_id: Optional[str] = None):
+        '''
+        Method to fetch the list of devices from the IPF instance opened in the API client, or the one entered
+
+        Takes parameters to select:
+        * filters - [optional] dictionary describing the table filters to be applied to the records (taken from IP Fabric table description)
+        * pagination - [optional] start and length of the "page" of data required
+        * snapshot_id - [optional] IP Fabric snapshot identifier to override the default defined at object initialisation
+
+        Returns a list of dictionaries in the form:
+        [
+            {
+                'hostname': device hostname,
+                'siteName': name of the site where the device belongs,
+                'vendor': vendor for this device,
+                'platform': platform for this device,
+                'loginIp': IP used for IP Fabric to login to this device
+            }
+        ]
+        '''
+        devices=self.fetch_table('tables/inventory/devices',columns=['hostname','siteName','vendor','platform','loginIp'],filters=filters, pagination=pagination, snapshot_id=snapshot_id)
+        return devices
 
     def fetch_table(self, url, columns: List[str], filters: Optional[Dict] = None, pagination: Optional[Dict] = None, snapshot_id: Optional[str] = None):
         '''
