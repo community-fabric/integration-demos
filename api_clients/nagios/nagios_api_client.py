@@ -1,8 +1,11 @@
+"""
+This NAGIOS API Client has been created for NAGIOS XI 5.8.3
+"""
+
 from typing import List, Dict, Optional
 import os
 
 from httpx import Client
-
 
 class NAGIOSClient(Client):
     def __init__(self, *vargs, token: Optional[str] = None, **kwargs):
