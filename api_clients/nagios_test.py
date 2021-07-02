@@ -7,14 +7,19 @@ from nagios.nagios_api_client import NAGIOSSensor, NAGIOSClient
 from rich import print  # Optional
 
 """
-export IPF_URL = ""
-export IPF_TOKEN = ""
+export IPF_URL=""
+export IPF_TOKEN=""
+ip=IPClient()
 d=IPFDevice('L66EXR1')
 d.hostname
 d.ipaddr
 
 export NAGIOS_URL=""
 export NAGIOS_TOKEN=""
-s=NAGIOSSensor(name=d.hostname,ipaddr=d.ipaddr)
+n=NAGIOSClient()
+n.host_list()
+n.hostgroup_list()
+n.create_hostgroup("site")
+s=NAGIOSSensor(name=d.hostname,ipaddr=d.ipaddr,site=d.site)
 s.delete()
 """

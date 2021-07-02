@@ -82,6 +82,7 @@ class NAGIOSClient(Client):
         Create hostgroup in Nagios
         """
         endpoint = "config/hostgroup?pretty=1" + self.credentials
+        # As an alias, we will use the first word, if any issue we will use the same name
         try:
             alias = site.split(" ", 1)[0]
         except:
@@ -94,6 +95,46 @@ class NAGIOSClient(Client):
         }
         res = self.post(endpoint, data=payload)
         res.raise_for_status()
+
+    def host_list(self):
+        """
+        Method to fetch a list of hosts from Nagios.
+
+        Takes no additional parameters.
+        Returns a list of dictionaries in the form:
+        [
+            {
+                "index": [not native] index in NAGIOS XI
+                "host_name": hostname,
+                "alias": alias of the hostgroup,
+                "display_name": display name of the host,
+                "address": IP address of the host,
+                "host_object_id": Object ID of the host,
+                "object_id": id of the object,
+                "is_active": True is the hostgroup is active,
+            }
+        ]
+        """
+        endpoint = "objects/host?pretty=1" + self.credentials
+        res = self.get(endpoint)
+        res.raise_for_status()
+
+        host_list = []
+        count = 0
+        for host_deet in res.json()["host"]:
+            host = {
+                "index": count,
+                "host_name": host_deet["host_name"],
+                "alias": host_deet["alias"],
+                "display_name": host_deet["display_name"],
+                "address": host_deet["address"],
+                "object_id": host_deet["object_id"],
+                "host_object_id": host_deet["host_object_id"],
+                "is_active": host_deet["is_active"],
+            }
+            count = count + 1
+            host_list.append(host)
+        return host_list
 
 
 class NAGIOSSensor:
