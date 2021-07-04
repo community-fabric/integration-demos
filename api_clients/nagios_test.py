@@ -9,7 +9,7 @@ from rich import print  # Optional
 """
 export IPF_URL=""
 export IPF_TOKEN=""
-ip=IPClient()
+ipf=IPClient()
 d=IPFDevice('L66EXR1')
 d.hostname
 d.ipaddr
