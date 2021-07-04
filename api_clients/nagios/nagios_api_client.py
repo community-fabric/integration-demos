@@ -137,7 +137,7 @@ class NAGIOSClient(Client):
         return host_list
 
 
-class NAGIOSSensor:
+class NAGIOSHost:
     def __init__(self, name: str, ipaddr: str, site: Optional[str] = ""):
         """
         Initialise a NAGIOSSensor object.
