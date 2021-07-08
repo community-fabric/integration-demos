@@ -1,3 +1,7 @@
+"""
+This NAGIOS API Client has been created and tested on NAGIOS XI 5.8.3 and 5.8.4
+"""
+
 from typing import List, Dict, Optional
 import os
 
@@ -33,24 +37,139 @@ class NAGIOSClient(Client):
         super().__init__(*vargs, verify=False, **kwargs)
         self.credentials = "&apikey=" + token
 
+    def hostgroup_list(self):
+        """
+        Method to fetch a list of hostgroups from Nagios.
 
-class NAGIOSSensor:
-    def __init__(self, name: str, ipaddr: str):
+        Takes no additional parameters.
+        Returns a list of dictionaries in the form:
+        [
+            {
+                "index": [not native] index in NAGIOS XI
+                "instance_id": id in NAGIOS XI,
+                "config_type": type of configuration,
+                "hostgroup_object_id": Object ID of the hostgroup,
+                "alias": alias of the hostgroup,
+                "object_id": id of the object,
+                "hostgroup_name": name of the hostgroup,
+                "is_active": True is the hostgroup is active,
+            }
+        ]
+        """
+        endpoint = "objects/hostgroup?pretty=1" + self.credentials
+        res = self.get(endpoint)
+        res.raise_for_status()
+
+        hostg_list = []
+        count = 0
+        for hostg_deet in res.json()["hostgroup"]:
+            hostgroup = {
+                "index": count,
+                "instance_id": hostg_deet["instance_id"],
+                "config_type": hostg_deet["config_type"],
+                "hostgroup_object_id": hostg_deet["hostgroup_object_id"],
+                "alias": hostg_deet["alias"],
+                "object_id": hostg_deet["object_id"],
+                "hostgroup_name": hostg_deet["hostgroup_name"],
+                "is_active": hostg_deet["is_active"],
+            }
+            count = count + 1
+            hostg_list.append(hostgroup)
+        return hostg_list
+
+    def create_hostgroup(self, site: str):
+        """
+        Create hostgroup in Nagios
+        """
+        endpoint = "config/hostgroup?pretty=1" + self.credentials
+        # As an alias, we will use the first word, if any issue we will use the same name
+        try:
+            alias = site.split(" ", 1)[0]
+        except:
+            alias = site
+        payload = {
+            "hostgroup_name": site,
+            "alias": alias,
+            "is_active": 1,
+            "applyconfig": "1",
+        }
+        res = self.post(endpoint, data=payload)
+        res.raise_for_status()
+
+    def host_list(self):
+        """
+        Method to fetch a list of hosts from Nagios.
+
+        Takes no additional parameters.
+        Returns a list of dictionaries in the form:
+        [
+            {
+                "index": [not native] index in NAGIOS XI
+                "host_name": hostname,
+                "alias": alias of the hostgroup,
+                "display_name": display name of the host,
+                "address": IP address of the host,
+                "host_object_id": Object ID of the host,
+                "object_id": id of the object,
+                "is_active": True is the hostgroup is active,
+            }
+        ]
+        """
+        endpoint = "objects/host?pretty=1" + self.credentials
+        res = self.get(endpoint)
+        res.raise_for_status()
+
+        host_list = []
+        count = 0
+        for host_deet in res.json()["host"]:
+            host = {
+                "index": count,
+                "host_name": host_deet["host_name"],
+                "alias": host_deet["alias"],
+                "display_name": host_deet["display_name"],
+                "address": host_deet["address"],
+                "object_id": host_deet["object_id"],
+                "host_object_id": host_deet["host_object_id"],
+                "is_active": host_deet["is_active"],
+            }
+            count = count + 1
+            host_list.append(host)
+        return host_list
+
+
+class NAGIOSHost:
+    def __init__(self, name: str, ipaddr: str, site: Optional[str] = ""):
         """
         Initialise a NAGIOSSensor object.
 
         Takes parameters:
         * name - [mandatory] a string containing the hostname for the sensor
         * ipaddr - [mandatory] a string containing the IP address of the sensor
+        * site - [optional] site string, if not in Nagios, it will be created
 
         Sets properties:
         * id = created object ID
         """
         nagios = NAGIOSClient()
         endpoint = "config/host?pretty=1" + nagios.credentials
+
+        # check if a hostgroup exists with this site name if not, we will create it
+        createSite = False
+        if site != "":
+            for item in nagios.hostgroup_list():
+                if site in item["hostgroup_name"]:
+                    createSite = False
+                    break
+                else:
+                    createSite = True
+
+        if createSite:
+            nagios.create_hostgroup(site)
+
         payload = {
             "host_name": name,
             "address": ipaddr,
+            "hostgroups": site,
             "check_command": "check_ping\!3000,80%\!5000,100%",
             "max_check_attempts": 2,
             "check_period": "24x7",
