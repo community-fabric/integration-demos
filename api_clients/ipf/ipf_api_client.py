@@ -123,15 +123,31 @@ class IPFClient(httpxClient):
             {
                 'hostname': device hostname,
                 'siteName': name of the site where the device belongs,
+                'loginIp': IP used for IP Fabric to login to this device,
+                'loginType': method used to connect to the device,
                 'vendor': vendor for this device,
-                'platform': platform for this device,
-                'loginIp': IP used for IP Fabric to login to this device
+                'platform': platform of this device,
+                'family': family of this device,
+                'version': OS version running on this device,
+                'sn': Serial Number of the device,
+                'devType': Type of device,
             }
         ]
         """
         devices = self.fetch_table(
             "tables/inventory/devices",
-            columns=["hostname", "siteName", "vendor", "platform", "loginIp"],
+            columns=[
+                "hostname",
+                "siteName",
+                "loginIp",
+                "loginType",
+                "vendor",
+                "platform",
+                "family",
+                "version",
+                "sn",
+                "devType",
+            ],
             filters=filters,
             pagination=pagination,
             snapshot_id=snapshot_id,
