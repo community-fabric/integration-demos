@@ -17,12 +17,19 @@ def main():
         f.write ("'hostname','vendor','family','version','number','CVE list'\n")
 
     for dev in devs:
-        try: #check to see if CVE list been pulled for combination of vendor, platform, version before
+        try: #check to see if CVE list been pulled for combination of vendor, platform, version beforec
+
             CVEList=fetchedCVEs[(dev['vendor'],dev['family'],dev['version'])]
-        except KeyError: #if not, fetch the CVE list from NIST
+        except KeyError: #if not, fetch up to the first 20 CVEs from NIST
             print('CVEs not fetched before - requesting '+str((dev['vendor'],dev['family'],dev['version']))+' ...')
-            res=NistCVECheck(dev['vendor'],dev['family'],dev['version'])
-            CVEList=res.list
+
+            try:
+                res=NistCVECheck(dev['vendor'],dev['family'],dev['version'])
+                fetchedCVEs.update({(dev['vendor'],dev['family'],dev['version']):res.list})
+                CVEList=res.list
+            except:
+                res=None
+                CVEList=[]
 
         #output the result
         noOfCVEs=len(CVEList)

@@ -1,7 +1,8 @@
-from typing import List, Dict, Optional
-import os
+#from typing import List, Dict, Optional
+#import os
 
-from httpx import Client
+from httpx import Client, ReadTimeout
+#from requests.models import ReadTimeoutError
 
 class NistCVEClient (Client):
     def __init__ (self, *vargs, **kwargs):
@@ -18,6 +19,14 @@ class NistCVEClient (Client):
             raise RuntimeError(
                 f'base_url not provided'
             )
+
+        try:
+            assert kwargs.setdefault('timeout',30)
+        except (AssertionError, KeyError):
+            raise RuntimeError(
+                f'timeout not set'
+            )
+
         kwargs['base_url']+='?cpeMatchString=cpe:2.3:*:'
         super().__init__(*vargs, verify=False, **kwargs)
 
@@ -38,7 +47,8 @@ class NistCVECheck():
         * list = list of CVE IDs
         * num = number of CVEs
         '''
-        nist=NistCVEClient()
+        #breakpoint()
+        nist=NistCVEClient(timeout=30)
 
         #format check URL depending on vendor-specific info
         if vendor=='juniper':
@@ -54,7 +64,7 @@ class NistCVECheck():
             checkVersion=str(vendor)+":"+str(family)+":"+v
 
         try:
-            res=nist.get(str(nist.base_url)+checkVersion)
+            res=nist.get(str(nist.base_url)+checkVersion+'&startIndex=0&resultsPerPage=50')
             res.raise_for_status()
             nist.close()
             self.json=res.json()
@@ -64,7 +74,9 @@ class NistCVECheck():
                 self.list.append(i['cve']['CVE_data_meta']['ID'])
             
         except ReadTimeout:
-            self.json={}
+            self.json={'status':'timeout'}
+            self.num=0
+            self.list=['Timeout']
         
         self.checked=checkVersion
 
