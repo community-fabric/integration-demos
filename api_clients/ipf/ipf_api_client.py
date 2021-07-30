@@ -92,6 +92,26 @@ class IPFClient(httpxClient):
 
         return snap_list
 
+    def fetch_last_snapshot_id(self):
+        """
+        Method to return the latest loaded snapshotfrom the IPF instance opened in the API client.
+
+        Takes no additional parameters.
+        Returns the ID of the latest snapshot as a string
+        """
+        res = self.get("/snapshots")
+        res.raise_for_status()
+
+        # Fetch last loaded snapshot info from IP Fabric
+        lastLoaded = False
+        for snap in res.json():
+            if snap["state"] == "loaded":
+                if not lastLoaded:
+                    lastSnap = snap["id"]
+                    lastLoaded = True
+                    break
+        return lastSnap
+    
     def site_list(
         self,
         filters: Optional[Dict] = None,
