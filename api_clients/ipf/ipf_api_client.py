@@ -35,7 +35,28 @@ class IPFClient(httpxClient):
 
         super().__init__(*vargs, verify=False, **kwargs)
         self.headers["X-API-Token"] = token
-        self.snapshot_id = snapshot_id
+        # if the snapshot is a "ref" we need to convert it to the actual ID
+        if snapshot_id in ["$last", "$prev", "$lastLocked"]:
+            self.snapshot_ref = snapshot_id
+            self.snapshot_id = self.convert_snapshot_id(snapshot_id)
+        else:
+            self.snapshot_ref = "N/A - only ID was provided"
+            self.snapshot_id = snapshot_id
+
+    def convert_snapshot_id(self, snapshot):
+        """
+        Method to convert a snapshot reference $last or $prev to its acutal ID
+
+        Requires the snapshot reference "$last" or "$prev" or "$lastLocked"
+        Returns the id of the snapshot, or the "$xxx" if not found
+        """
+        url = "tables/inventory/sites"
+        columns = ["id"]
+        snapshot_id = snapshot
+        payload = dict(columns=columns, snapshot=snapshot_id)
+        res = self.post(url, json=payload)
+
+        return res.json()["_meta"]["snapshot"]
 
     def snapshot_list(self):
         """
