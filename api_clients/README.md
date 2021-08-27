@@ -15,5 +15,5 @@ For prtg_api_client.py, a PRTG API client subclass of httpx. Test script is prtg
 
 ## nist_cve subdirectory
 
-For nistcve_api_client.py, a NIST cvedetails.com API client subclass of httpx. Test script is ipf_vuln.py
+For nistcve_api_client.py, a NIST cvedetails.com API client subclass of httpx. Test script is vuln_ipf.py
 
