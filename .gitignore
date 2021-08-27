@@ -138,6 +138,10 @@ dmypy.json
 #git
 .gitignore
 
+#big-demo
+big_demo*
+big_demo/
+
 #cisco poc
 cisco*
 cisco_poc/
