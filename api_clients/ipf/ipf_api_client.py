@@ -223,6 +223,9 @@ class IPFClient(httpxClient):
         if pagination:
             payload["pagination"] = pagination
 
+        if snapshot_id == "":
+            snapshot_id = "$last"
+        
         res = self.post(url, json=payload)
         res.raise_for_status()
         body = res.json()
