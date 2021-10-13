@@ -25,11 +25,7 @@ class IPFClient(httpxClient):
         except AssertionError:
             raise RuntimeError(f"base_url not provided or IPF_URL not set")
 
-        ## if using IPF DEV server, only use /v1, no /api
-        if kwargs["base_url"].find(":8100") != -1:
-            kwargs["base_url"] += "/v1"
-        else:
-            kwargs["base_url"] += "/api/v1"
+        kwargs["base_url"] += "/api/v1"
 
         if not token:
             try:
