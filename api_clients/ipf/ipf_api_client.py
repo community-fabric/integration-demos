@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional
 import os
+import sys
 from httpx import Client as httpxClient
 
 
@@ -24,7 +25,11 @@ class IPFClient(httpxClient):
         except AssertionError:
             raise RuntimeError(f"base_url not provided or IPF_URL not set")
 
-        kwargs["base_url"] += "/api/v1"
+        ## if using IPF DEV server, only use /v1, no /api
+        if kwargs["base_url"].find(":8100") != -1:
+            kwargs["base_url"] += "/v1"
+        else:
+            kwargs["base_url"] += "/api/v1"
 
         if not token:
             try:
@@ -34,18 +39,44 @@ class IPFClient(httpxClient):
 
         super().__init__(*vargs, verify=False, **kwargs)
         self.headers["X-API-Token"] = token
+
+        # Request IP Fabric for the OS Version, by doing that we are also ensuring the token is valid
+        self.os_version = self.fetch_os_version()
+
         # if the snapshot is a "ref" we need to convert it to the actual ID
         if snapshot_id in ["$last", "$prev", "$lastLocked"]:
             self.snapshot_ref = snapshot_id
             self.snapshot_id = self.convert_snapshot_id(snapshot_id)
+        # if empty, we will use $last
         elif snapshot_id == "":
             self.snapshot_id = self.convert_snapshot_id("$last")
+        # finally if we provded the ID of a snapshot, we will ensure this ID exists
         else:
             self.snapshot_ref = "N/A - only ID was provided"
-            self.snapshot_id = snapshot_id
+            if self.valid_snapshot(snapshot_id):
+                self.snapshot_id = snapshot_id
+            else:
+                sys.exit(f"##ERROR## EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
 
-        # Variable indicating the Version of IP Fabric
-        self.os_version = self.get(url="os/version").json()["version"]
+    def fetch_os_version(self):
+        """
+        Method to fetch the OS version of IP Fabric
+        Requires no additional variable
+        Returns the os version as a string
+        """
+        res = self.get(url="os/version")
+        if not res.is_error:
+            try:
+                os_version = res.json()["version"]
+            except KeyError as exc:
+                print(f"##ERROR## Type of error: {type(exc)}")
+                sys.exit(
+                    f"##ERROR## While getting the OS version, no Version available, message: {exc.args}"
+                )
+        else:
+            sys.exit(f"##ERROR## EXIT -> Incorrect TOKEN")
+
+        return os_version
 
     def convert_snapshot_id(self, snapshot):
         """
@@ -58,8 +89,23 @@ class IPFClient(httpxClient):
         snapshot_id = snapshot
         payload = dict(columns=columns, snapshot=snapshot_id)
         res = self.post(url, json=payload)
+        res.raise_for_status()
+        response_snapshot = res.json()["_meta"]["snapshot"]
 
-        return res.json()["_meta"]["snapshot"]
+        return response_snapshot
+
+    def valid_snapshot(self, snapshot):
+        """
+        Method to check that if an snapshot ID has been provided, it is valid
+        Takes the snapshot ID used to create the client
+        Returns True or False
+        """
+        valid = False
+        for snap in self.snapshot_list():
+            if snapshot == snap["id"]:
+                valid = True
+                break
+        return valid
 
     def snapshot_list(self):
         """
