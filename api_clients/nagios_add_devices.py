@@ -10,7 +10,7 @@ def main():
     ipf = IPFClient()
     # collect all devices from IP Fabric using the filter
     filters = {"siteName": ["like", "45"]}
-    devices = ipf.device_list(filters=filters)
+    devices = ipf.inventory.devices.all(filters=filters)
     # now we create in Nagios each device
     for device in devices:
         print(f" -- Adding device '{device['hostname']}' in site '{device['siteName']}'")
