@@ -16,27 +16,23 @@ def main():
         f.write("'hostname','vendor','family','version','number','CVE list'\n")
 
     for dev in devs:
-        try:  # check to see if CVE list been pulled for combination of vendor, platform, version beforec
-
-            cves = fetched_cves[(dev['vendor'], dev['family'], dev['version'])]
-        except KeyError:  # if not, fetch up to the first 20 CVEs from NIST
+        combo = (dev['vendor'], dev['family'], dev['version'])
+        if combo not in fetched_cves:
+            # if not, fetch up to the first 50 CVEs from NIST
             print(
                 'CVEs not fetched before - requesting ' + str((dev['vendor'], dev['family'], dev['version'])) + ' ...')
-
             try:
                 res = NistCVECheck(dev['vendor'], dev['family'], dev['version'])
-                fetched_cves.update({(dev['vendor'], dev['family'], dev['version']): res.list})
-                cves = res.list
+                fetched_cves.update({combo: res.cves})
             except:
-                res = None
-                cves = list()
+                fetched_cves.update({combo: ['Error']})
 
         # output the result
 
         if screen:
             print(dev['hostname'], dev['vendor'], dev['family'], dev['version'])
-            print(f'    No of CVEs: {len(cves)}')
-            for c in res.list:
+            print(f'    No of CVEs: {len(fetched_cves[combo])}')
+            for c in fetched_cves[combo]:
                 print('        ', c)
 
         if file:
@@ -45,8 +41,8 @@ def main():
                 f.write(dev['family'] + "','")
             else:
                 f.write("','")
-            f.write(dev['version'] + "','" + str({len(cves)}))
-            for c in res.list:
+            f.write(dev['version'] + "','" + str({len(fetched_cves[combo])}))
+            for c in fetched_cves[combo]:
                 f.write("','" + c)
             f.write("\n")
 

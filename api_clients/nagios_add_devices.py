@@ -17,5 +17,6 @@ def main():
         NAGIOSHost(name=device["hostname"], ipaddr=device["loginIp"], site=device["siteName"])
     print(f"Job completed! {len(devices)} devices were added to hostgroup '{devices[0]['siteName']}'")
 
+
 if __name__ == "__main__":
     main()
