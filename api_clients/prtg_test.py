@@ -1,9 +1,6 @@
 '''
 Script to show sample use of ipf_api_client and prtg_api_client
 '''
-from ipf.ipf_device import IPFDevice
-from prtg.prtg_api_client import PRTGSensor
-
 
 '''
 d=IPFDevice('L45R5')

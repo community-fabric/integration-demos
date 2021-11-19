@@ -2,9 +2,6 @@
 Script to show sample use of ipf_api_client and nagios_api_client
 """
 
-from ipf.ipf_device import IPFDevice
-from nagios.nagios_api_client import NAGIOSHost, NAGIOSClient
-
 """
 export IPF_URL=""
 export IPF_TOKEN=""

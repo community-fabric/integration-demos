@@ -1,8 +1,8 @@
 """
 Script to show sample use of ipf_api_client
 """
-from ipf.ipf_api_client import IPFClient
-from ipf.ipf_device import IPFDevice
+from ipfabric import IPFClient
+from ipf_device import IPFDevice
 
 # this requires the variables IPF_URL and IPF_TOKEN to exists in the environment
 ipf = IPFClient()

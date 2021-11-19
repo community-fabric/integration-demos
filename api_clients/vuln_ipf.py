@@ -1,4 +1,4 @@
-from ipf.ipf_api_client import IPFClient
+from ipfabric import IPFClient
 from nist_cve.nistcve_api_client import NistCVECheck
 
 

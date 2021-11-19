@@ -1,7 +1,7 @@
 """
 Script to show simple use of ipf_api_client and nagios_api_client
 """
-from ipf.ipf_api_client import IPFClient
+from ipfabric import IPFClient
 from nagios.nagios_api_client import NAGIOSHost
 
 
