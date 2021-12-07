@@ -1,9 +1,6 @@
 # api_clients directory
 This directory contains API clients for use in IP Fabric integrations.  Subfolders are:
 
-## ipf subdirectory
-
-For ipf_api_client.py, an IP Fabric API client subclass of httpx.  Test script is ipf_test.py
 
 ## nagios subdirectory
 
