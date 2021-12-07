@@ -1,58 +1,59 @@
-from ipf.ipf_api_client import IPFDevice,IPFClient
+from ipfabric import IPFClient
 from nist_cve.nistcve_api_client import NistCVECheck
-import httpx
-import json
 
 
-def main():
+def fetch_cve(dev):
+    # if not, fetch up to the first 50 CVEs from NIST
+    print(
+        'CVEs not fetched before - requesting ' + str((dev['vendor'], dev['family'], dev['version'])) + ' ...')
+    try:
+        res = NistCVECheck(dev['vendor'], dev['family'], dev['version'])
+        return res.cves
+    except:
+        return ['Error']
+
+
+def print_cve(f, dev, cves):
+    f.write("'" + dev['hostname'] + "','" + dev['vendor'] + "','")
+    if dev['family']:
+        f.write(dev['family'] + "','")
+    else:
+        f.write("','")
+    f.write(dev['version'] + "','" + str({len(cves)}))
+    for c in cves:
+        f.write("','" + c)
+    f.write("\n")
+
+
+def main(screen=True, file='cve.csv'):
     print("Fetching IP Fabric inventory")
-    ipf=IPFClient()
-    devs=ipf.fetch_table(url='tables/inventory/devices',columns=['hostname','vendor','family','version'],filters={"siteName":["like","L1"]})
-    fetchedCVEs={}
-    outputToScreen=True
-    outputToFile='cve.csv'
+    ipf = IPFClient()
+    devs = ipf.inventory.devices.all(columns=['hostname', 'vendor', 'family', 'version'],
+                                     filters={"siteName": ["like", "L35"]})
+    fetched_cves = dict()
 
-    if outputToFile:
-        f=open(outputToFile,"w")
-        f.write ("'hostname','vendor','family','version','number','CVE list'\n")
+    if file:
+        f = open(file, "w")
+        f.write("'hostname','vendor','family','version','number','CVE list'\n")
 
     for dev in devs:
-        try: #check to see if CVE list been pulled for combination of vendor, platform, version beforec
+        combo = (dev['vendor'], dev['family'], dev['version'])
+        if combo not in fetched_cves:
+            fetched_cves[combo] = fetch_cve(dev)
 
-            CVEList=fetchedCVEs[(dev['vendor'],dev['family'],dev['version'])]
-        except KeyError: #if not, fetch up to the first 20 CVEs from NIST
-            print('CVEs not fetched before - requesting '+str((dev['vendor'],dev['family'],dev['version']))+' ...')
+        # output the result
+        if screen:
+            print(dev['hostname'], dev['vendor'], dev['family'], dev['version'])
+            print(f'    No of CVEs: {len(fetched_cves[combo])}')
+            for c in fetched_cves[combo]:
+                print('        ', c)
 
-            try:
-                res=NistCVECheck(dev['vendor'],dev['family'],dev['version'])
-                fetchedCVEs.update({(dev['vendor'],dev['family'],dev['version']):res.list})
-                CVEList=res.list
-            except:
-                res=None
-                CVEList=[]
+        if file:
+            print_cve(f, dev, fetched_cves[combo])
 
-        #output the result
-        noOfCVEs=len(CVEList)
-
-        if outputToScreen:
-            print (dev['hostname'],dev['vendor'],dev['family'],dev['version'])
-            print ('    No of CVEs: ',noOfCVEs)
-            for c in res.list:
-                print ('        ',c)
-
-        if outputToFile:
-            f.write ("'"+dev['hostname']+"','"+dev['vendor']+"','")
-            if dev['family']:
-                f.write(dev['family']+"','")
-            else:
-                f.write("','")
-            f.write(dev['version']+"','"+str(noOfCVEs))
-            for c in res.list:
-                f.write("','"+c)
-            f.write ("\n")
-
-    if outputToFile:
+    if file:
         f.close()
+
 
 if __name__ == "__main__":
     main()

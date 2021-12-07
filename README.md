@@ -1,7 +1,7 @@
 # integration-demos
 This repo is used for the Python examples used to demonstrate IP Fabric's integrations with other systems.
 
-* [api_clients](api_clients)
+Integrations use the python ipfabric package located at
 
 This directory contains API clients for IP Fabric and other systems based on httpx, along with some demo usage scripts
 
