@@ -1,4 +1,5 @@
 """
+2022-01-07 - v1.0
 This CENTREON API Client has been created and tested on CENTREON 21.04.3
 """
 
