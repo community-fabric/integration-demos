@@ -1,5 +1,6 @@
 """
-Script to show sample use of ipf_api_client and centreon_api_client
+2022-01-10 - v1.0
+Script to show sample use of ipfabric python's module and centreon_api_client
 """
 
 # from api.ipf_api_client import IPFDevice, IPFClient
