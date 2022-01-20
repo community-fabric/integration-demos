@@ -65,3 +65,5 @@ if add_device:
 
 print("\n##INFO## Applying new configuration")
 c.apply_config()
+c.close()
+
