@@ -1,0 +1,9 @@
+plugin: ipfabric.ansible.inventory
+provider:
+  base_url: xxx
+  token: xxx
+  verify: false
+# keyed_groups:
+#   - key: sitename
+#     prefix: ""
+#     separator: ""
