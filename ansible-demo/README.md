@@ -4,5 +4,6 @@
 
 ```
 pip install -r requirements.txt
-ansible-galaxy collection install git@github.com:community-fabric/ipfabric-ansible.git
+ansible-galaxy collection install -r requirements.yml
+pip install -r requirements.txt
 ```

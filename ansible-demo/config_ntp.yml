@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: False
+  gather_facts: False
+
+  vars:
+    provider:
+      token: 51cd1dfa7e9f34951d746d082504ee5
+      base_url: https://172.30.201.144/
+      verify: false
+
+  tasks:
+    - name: configure new NTP server
+      arista.eos.eos_ntp_global:
+        config:
+          servers: 
+            - server: "{{ ntp_server }}"
+        state: overridden
+      when: (ansible_network_os == 'eos')
+
+    - name: configure new NTP server
+      cisco.ios.ios_ntp_global:
+        config:
+          servers: 
+            - server: "{{ ntp_server }}"
+              vrf: MGMT
+        state: overridden
+      when: (ansible_network_os == 'ios')

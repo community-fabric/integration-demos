@@ -1,9 +1,12 @@
 plugin: ipfabric.ansible.inventory
 provider:
-  base_url: xxx
-  token: xxx
+  # base_url: 
+  # token: 
   verify: false
-# keyed_groups:
-#   - key: sitename
-#     prefix: ""
-#     separator: ""
+# snapshot_id: 
+compose:
+  ansible_network_os: family
+keyed_groups:
+  - key: family
+    prefix: ""
+    separator: ""
