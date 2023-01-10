@@ -1,4 +1,4 @@
-plugin: ipfabric.ansible.inventory
+plugin: community_fabric.ansible.inventory
 provider:
   # base_url: 
   # token: 
