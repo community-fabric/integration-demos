@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Snapshot Info
+      community_fabric.ansible.snapshot_info:
+        provider: "{{ provider }}"
+        snapshot_id: 8a809a7c-4b4a-4ca5-89cd-bfb40e66f277

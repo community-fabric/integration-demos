@@ -1,0 +1,72 @@
+---
+- hosts: all
+  gather_facts: False
+
+  tasks:
+    - name: Filter and select columns on technology table
+      community_fabric.ansible.table_info:
+        provider: "{{ provider }}" 
+        # snapshot_id: 07b338d0-4cc1-48e9-a99d-12ce100b0bb8
+        technology: management
+        table: ntp_summary
+        filter: {sources: ["color", "eq", "30"]}
+        report: /technology/management/ntp/summary
+      delegate_to: localhost
+      run_once: true
+      register: NTP_DATA
+
+    - debug:
+        msg: "Number of non-compliant devices: {{ NTP_DATA.data | length }}"
+      delegate_to: localhost
+      run_once: true
+
+    # - name: Configure Junos NTP
+    #   junipernetworks.junos.junos_ntp_global:
+    #     config:
+    #       servers: "{{ ntp.servers }}"
+    #     state: overridden
+    #   when: ansible_network_os == 'junos'
+
+    - name: Configure EOS NTP
+      arista.eos.eos_ntp_global:
+        config:
+          servers: 
+            - server: "{{ ntp_server }}"
+        state: overridden
+      when: (ansible_network_os == 'eos') and (item.hostname == hostvars[inventory_hostname]['hostname'])
+      loop: "{{ NTP_DATA.data }}"
+
+    - name: Configure IOS NTP
+      cisco.ios.ios_ntp_global:
+        config:
+          servers: 
+            - server: "{{ ntp_server }}"
+              vrf: MGMT
+        state: overridden
+      when: (ansible_network_os == 'ios') and (item.hostname == hostvars[inventory_hostname]['hostname'])
+      loop: "{{ NTP_DATA.data }}"
+
+    - name: Start Snapshot
+      community_fabric.ansible.snapshot:
+        provider: "{{ provider }}" 
+      delegate_to: localhost 
+      run_once: true
+      register: new_snapshot
+
+    - name: check snapshot
+      community_fabric.ansible.snapshot_info:
+        provider: "{{ provider }}"
+        snapshot_id: "{{ new_snapshot.data.id }}"
+      register: result
+      until: result.data.status == 'done'
+      retries: 20
+      delay: 30
+      delegate_to: localhost
+      run_once: true
+
+    - name: Check non-compliant devices
+      debug:
+        msg: "Number of non-compliant devices: {{ lookup('community_fabric.ansible.table_info', 'management', 'ntp_summary', filter={'sources': ['color', 'eq', '30']}, report='/technology/management/ntp/summary', base_url=provider.base_url, token=provider.token, verify=False, snapshot_id=new_snapshot.data.id) | length }}"
+      delegate_to: localhost
+      run_once: true
+  

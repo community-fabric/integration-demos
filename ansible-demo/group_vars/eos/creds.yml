@@ -1,0 +1,2 @@
+ansible_ssh_pass: vagrant
+ansible_user: vagrant

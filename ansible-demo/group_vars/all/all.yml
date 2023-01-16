@@ -1,0 +1,6 @@
+---
+ansible_user: vagrant
+ansible_password: vagrant
+ansible_connection: ansible.netcommon.network_cli
+ntp_server: 192.168.121.1
+# ntp_server: 1.1.1.1

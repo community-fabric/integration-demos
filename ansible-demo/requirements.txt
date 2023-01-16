@@ -1,0 +1,7 @@
+ansible
+ipfabric
+paramiko
+ansible-pylibssh
+lxml
+ncclient
+xmltodict

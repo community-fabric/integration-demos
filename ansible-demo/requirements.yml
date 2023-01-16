@@ -1,0 +1,3 @@
+collections:
+  - name: https://github.com/community-fabric/ipfabric-ansible.git
+    type: git

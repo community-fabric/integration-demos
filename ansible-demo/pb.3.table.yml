@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Snapshot Info
+      community_fabric.ansible.table_info:
+        provider: "{{ provider }}"
+        # snapshot_id: 
+        technology: inventory
+        table: devices
+      register: devices
+
+    # - name: Loop over returned devices
+    #   debug:
+    #     msg: "{{ item.hostname }} vendor: {{ item.vendor }}"
+    #   loop: "{{ devices.data }}"
+
+    - name: Find IP address of a MAC address
+      community_fabric.ansible.table_info:
+        provider: "{{ provider }}"
+        # snapshot_id: 
+        technology: addressing
+        table: arp_table
+        filter:
+          mac:
+            - like
+            - 5254.00d3.45c5
+        columns:
+          - hostname
+          - intName
+          - ip
+          - mac
+    #   register: arp_result
+    
+    # - name: IP Belonging to MAC
+    #   debug: 
+    #     msg: "MAC: {{ item.mac }} has an IP of {{ item.ip }} on device {{ item.hostname }} ({{ item.intName }})"
+    #   loop: "{{ arp_result.data }}"
+
+    - name: Filter and noncompliant NTP configurations
+      community_fabric.ansible.table_info:
+        provider: "{{ provider }}" 
+        # snapshot_id: 
+        technology: management
+        table: ntp_summary
+        filter: {sources: ["color", "eq", "30"]}
+        report: /technology/management/ntp/summary
+      register: ntp_summary
+
+    - name: IP Belonging to MAC
+      debug: 
+        msg: "Device {{ item.hostname }} is not compliant NTP is currently configured to {{ item.sources.data }}"
+      loop: "{{ ntp_summary.data }}"
+          

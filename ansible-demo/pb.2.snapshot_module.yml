@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    # - name: Start Snapshot
+    #   community_fabric.ansible.snapshot:
+    #     provider: "{{ provider }}"
+
+    # - name: Clone Snapshot
+    #   community_fabric.ansible.snapshot:
+    #     provider: "{{ provider }}"
+    #     snapshot_id: 8a809a7c-4b4a-4ca5-89cd-bfb40e66f277
+    #     state: clone
+
+    # - name: Change name and note on snapshot
+    #   community_fabric.ansible.snapshot:
+    #     provider: "{{ provider }}"
+    #     snapshot_id: 87074991-9366-4efb-bafd-cff00041c50d
+    #     snapshot_name: Hello Webinar
+    #     snapshot_note: this is a cloned snapshot
+
+    - name: Unload and Load Snapshot
+      community_fabric.ansible.snapshot:
+        provider: "{{ provider }}"
+        snapshot_id: 87074991-9366-4efb-bafd-cff00041c50d
+        state: load
+
+    # - name: Delete Snapshot
+    #   community_fabric.ansible.snapshot:
+    #     provider: "{{ provider }}"
+    #     snapshot_id: 514de4cf-3444-4e19-a484-17cd7f56d8e3
+    #     state: absent
+
+    # - name: Rediscover Device in Snapshot
+    #   community_fabric.ansible.snapshot:
+    #     provider: "{{ provider }}"
+    #     snapshot_id: 89c1c1b3-7a9f-4609-9f85-6e6265bd7d94
+    #     devices:
+    #       - 1EA5474875CFAACBC8C11E7D4042B8D2
+    #     state: rediscover

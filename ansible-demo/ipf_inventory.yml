@@ -1,0 +1,11 @@
+plugin: community_fabric.ansible.inventory
+provider:
+  base_url: 
+  token: 
+  verify: false
+compose:
+  ansible_network_os: family
+keyed_groups:
+  - key: family
+    prefix: ""
+    separator: ""
