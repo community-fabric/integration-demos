@@ -1,9 +1,8 @@
 plugin: community_fabric.ansible.inventory
 provider:
-  # base_url: 
-  # token: 
+  base_url: 
+  token: 
   verify: false
-# snapshot_id: 
 compose:
   ansible_network_os: family
 keyed_groups:

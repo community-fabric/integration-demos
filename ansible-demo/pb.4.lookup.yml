@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  gather_facts: False
+
+  tasks:
+    - name: Check non-compliant devices
+      debug:
+        msg: "Number of non-compliant devices: {{ lookup('community_fabric.ansible.table_info', 'management', 'ntp_summary', filter={'sources': ['color', 'eq', '30']}, report='/technology/management/ntp/summary', base_url=provider.base_url, token=provider.token, verify=False) | length }}"
+      delegate_to: localhost
+      run_once: true
+  
