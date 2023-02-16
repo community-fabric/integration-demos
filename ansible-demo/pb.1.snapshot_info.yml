@@ -6,4 +6,4 @@
     - name: Snapshot Info
       community_fabric.ansible.snapshot_info:
         provider: "{{ provider }}"
-        snapshot_id: 8a809a7c-4b4a-4ca5-89cd-bfb40e66f277
+        snapshot_id: 22fc2140-b1d2-433d-87d7-e26c67b52f1d
